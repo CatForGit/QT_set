@@ -1,0 +1,118 @@
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <regex>
+
+class Calloc {
+public:
+	Calloc();
+	Calloc(const int S, int* M);
+	Calloc(const Calloc& r);
+	Calloc(Calloc&& mov);
+	Calloc& operator=(const Calloc& r);
+	Calloc& operator=(Calloc&& mov);
+	~Calloc();
+
+	int Get_size() { return _size; }
+	void Print() {
+		std::cout << std::endl << "Massiv: " << std::endl;
+		for (size_t i = 0; i < this->Get_size(); i++)
+			std::cout << _mas[i] << " ";
+		std::cout << std::endl << std::endl;
+	}
+	void Sort(bool mod = 1) { // 1 - по возрастанию, 2 - по убыванию
+		if(mod) std::sort(_mas, _mas + this->Get_size());
+		else std::sort(_mas, _mas + this->Get_size(), [&](int a, int b) { return a > b; });
+	}
+	//Простое число, если число простое то возращает 1, если нет то 0
+	bool Is_Prime_Number(int num) {
+		if (num > 1) {
+			for (int i = 2; i < num; i++)
+				if (num % i == 0) return 0;
+			return 1;
+		}
+		else return 0;
+	}
+	bool reg_expressions(std::string& str) {
+		//усли тут гденибудь в регулярке написать пробел все сломается 
+		//тоесть без пробелов
+		std::regex regular("((0[0-9])|(1[0-9])|2[0-3]):[0-5][0-9]");
+		if (std::regex_match(str.c_str(), regular)) return 1;
+		return 0;
+	}
+
+
+private:
+	int _size;
+	int* _mas;
+};
+
+
+
+Calloc::Calloc() {
+	_size = 0;
+	_mas = new int[_size];
+}
+
+Calloc::Calloc(const int S, int* M) {
+	_size = S;
+	_mas = new int[_size];
+	for (size_t i = 0; i < _size; i++) _mas[i] = M[i];
+}
+
+Calloc::Calloc(const Calloc& r) {
+	_size = r._size;
+	_mas = new int[_size];
+	for (size_t i = 0; i < _size; i++)
+		_mas[i] = r._mas[i];
+}
+
+Calloc::Calloc(Calloc&& mov) {
+	_size = mov._size;
+	_mas = mov._mas;
+	mov._size = 0;
+	mov._mas = nullptr;
+}
+
+Calloc& Calloc::operator=(const Calloc& r) {
+	if (this == &r) return *this;
+	_size = r._size;
+	delete[] _mas;
+	_mas = new int[_size];
+	for (size_t i = 0; i < _size; i++)
+		_mas[i] = r._mas[i];
+	return *this;
+}
+
+Calloc& Calloc::operator=(Calloc&& mov) {
+	if (this == &mov) return *this;
+	_size = mov._size;
+	mov._size = 0;
+	delete[] _mas;
+	_mas = mov._mas;
+	mov._mas = nullptr;
+	return *this;
+}
+
+Calloc::~Calloc() {
+	_size = 0;
+	delete[] _mas;
+}
+
+
+int  main() {
+	int a[7] = {2, 3, 7, 6, 5, 1, 4};
+	Calloc C(7, a);
+
+	std::string s1 = "15:23";
+	std::string s2 = "00:00";
+	std::string s3 = "23:59";
+	std::string s4 = "22:53";
+	
+	std::cout << s1 << "  ->  " << C.reg_expressions(s1) << std::endl;
+	std::cout << s2 << "  ->  " << C.reg_expressions(s2) << std::endl;
+	std::cout << s3 << "  ->  " << C.reg_expressions(s3) << std::endl;
+	std::cout << s4 << "  ->  " << C.reg_expressions(s4) << std::endl;
+
+	return 0;
+}
